@@ -2,6 +2,13 @@
 
 All noteable changes to this project will be documented in this file. This project adheres to http://semver.org/[Semantic Versioning]
 
+## [0.1.1] – 2018-01-08
+
+### Fixed
+
+* Wrong download URL in README
+
+
 ## [0.1.0] – 2018-01-08
 
 
