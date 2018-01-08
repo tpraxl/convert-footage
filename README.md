@@ -28,7 +28,7 @@ Alternatively, you can put the script anywhere. It's just more convenient to fol
 
 ```bash
 cd $HOME/bin
-wget https://github.com/tpraxl/convert-footage/blob/master/convert-footage
+wget https://raw.githubusercontent.com/tpraxl/convert-footage/master/convert-footage
 chmod u+x convert-footage
 ```
 
