@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ############################################################################
 #
+# Version 0.1.0
+#
 # Usage: convert-footage [options] file-or-folder
 #
 # Convert file to Davinci Resolve 14 compatible format.
