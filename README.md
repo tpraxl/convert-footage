@@ -1,7 +1,7 @@
 # Convert footage
 
-[davinci]: (https://www.blackmagicdesign.com/products/davinciresolve)
-[mit]: (http://opensource.org/licenses/MIT)
+[davinci]: https://www.blackmagicdesign.com/products/davinciresolve
+[mit]: http://opensource.org/licenses/MIT
 
 Provide scripts to convert video footage for [Davinci Resolve 14 Free][davinci] (Linux).
 
