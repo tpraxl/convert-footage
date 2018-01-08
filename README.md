@@ -2,7 +2,7 @@
 
 [davinci]: https://www.blackmagicdesign.com/products/davinciresolve
 [mit]: http://opensource.org/licenses/MIT
-[script]: https://github.com/tpraxl/convert-footage/blob/master/convert-footage
+[script]: https://raw.githubusercontent.com/tpraxl/convert-footage/master/convert-footage
 
 Provide script to convert video footage for [Davinci Resolve 14 Free][davinci] (Linux).
 
