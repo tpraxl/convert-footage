@@ -2,36 +2,49 @@
 
 [davinci]: https://www.blackmagicdesign.com/products/davinciresolve
 [mit]: http://opensource.org/licenses/MIT
+[script]: https://github.com/tpraxl/convert-footage/blob/master/convert-footage
 
-Provide scripts to convert video footage for [Davinci Resolve 14 Free][davinci] (Linux).
+Provide script to convert video footage for [Davinci Resolve 14 Free][davinci] (Linux).
 
 ## Supported codec / container combination
 
-The free version of Davinci on linux has not much support for codecs. I found a working solution by testing out lots of different container 
+The free version of Davinci on linux has not much support for codecs. I found a working solution by testing out lots of different container
 format / audio codec / video codec combinations.
 
 * MPEG-4 Part2 Video Codec
 * PCM 16bit little endian signed Audio Codec
 * in MOV container
 
-In order to simplify the conversion of footage, I created two scripts.
+This script simplifies the conversion of footage for Davinci Resolve.
 
-Currently, this project is at a very early stage. The scripts have been created for personal use and there are not many options.
+Currently, this project is at an early stage. More options are likely to come up.
 
-This might however change over time.
+**If you miss a certain feature, don't hesitate to open an issue that describes your needs**
 
 ## Installation
 
-* Download the scripts or clone the git repo.
-* Copy `cffile` and `cffolder` to `$HOME/bin`
-* Make sure, the files are executable: `cd $HOME/bin && chmod u+x cff*`
-* Make sure to export `$HOME/bin` (see below)
+If you don't have a `$HOME/bin` folder, <a href="#setup-home-bin-folder">follow this guide first</a>.
+Alternatively, you can put the script anywhere. It's just more convenient to follow the recommendations.
 
-Alternatively, you can put them anywhere. It's just more convenient to follow the recommendations.
+```bash
+cd $HOME/bin
+wget https://github.com/tpraxl/convert-footage/blob/master/convert-footage
+chmod u+x convert-footage
+```
 
-## Exporting the path
+<a id="setup-home-bin-folder"></a>
+## Setup $HOME/bin folder
 
-This depends on the shell, you are using.
+In the Terminal:
+
+```bash
+# Make sure to add this to your $PATH afterwards (see below)
+mkdir $HOME/bin
+```
+
+### Add $HOME/bin to $PATH
+
+This depends on the shell you are using.
 
 `bash` users edit `~/.bashrc`. Find a line that exports your `PATH`. Maybe there is no such line. Just create it as follows then. Make sure that your `$PATH` contains the installation path:
 
@@ -39,36 +52,57 @@ This depends on the shell, you are using.
 export PATH=$PATH:/home/your-user-name/bin
 ```
 
+You may need to open a new Terminal afterwards. Just check if `echo $PATH` contains your new folder.
+
 ## Usage
 
-Use the scripts as follows:
+Use the tool as follows:
 
-### Single file conversion
+### Single file conversion or complete folder conversion
 
-```bash
-# Usage: cffile [filename] [quality]
-# The lower the value, the better the quality
-cffile myvideo.mp4 0
-``` 
+You can find the usage below.
 
-### Batch file conversion
+convert-footage will not convert files twice and it will not convert your conversion results, so running it twice in the same folder will only trigger conversion when you have renamed the conversion results or when there is new footage.
 
 ```bash
-# Usage: cffolder [foldername] [quality]
-# The lower the value, the better the quality
-cffolder . 0
+############################################################################
+#
+# Usage: convert-footage [options] file-or-folder
+#
+# Convert file to Davinci Resolve 14 compatible format.
+#
+# Options:
+#  -h   ... help message
+#  -q n ... quality of the encoded video. Defaults to 0 for best quality.
+#
+# Examples:
+#
+# Convert the current folder with best quality (default)
+#  convert-footage .
+#
+# Convert the current folder with quality 1
+#  convert-footage -q 1 .
+#
+# Convert folder ../myvideos with best quality (default)
+#  convert-footage ../myvideos
+#
+# Convert file ./myvideo.mp4 with quality 1
+#  convert-footage -q 1 ./myvideo.mp4
+#
+# Show help
+#  convert-footage -h
+#
+############################################################################
 ```
 
 ## Todo / Contribution
 
 There's a lot to do in order to make the scripts more convenient. Contributions are welcome. The most important TODOs are listed below:
 
-* Provide a better help and usage description
 * Perform a sanity check on start (check if all requirements are installed)
-* Allow the usage of named arguments, e.g. `cffile -i myvideo.mp4 -q 0`
-* Provide more flexibility for `cffolder` (more file name patterns, configurable patterns and output file name / location)
+* Provide more flexibility for folder-conversion (more file name patterns, configurable patterns and output file name / location)
 * Provide a context menu entry for nautilus, nemo and other file managers
 
-## License 
+## License
 
 [MIT][mit]
