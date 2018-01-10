@@ -42,7 +42,7 @@ main() {
   local OPTIND opt
 
 
-  while getopts "heq:s:" opt; do
+  while getopts ":heq:s:" opt; do
     case "${opt}" in
       h)
           print_usage
@@ -72,7 +72,7 @@ main() {
           esac
           ;;
       \?)
-          print_error "Invalid option: -${OPTARG}" >&2
+          print_error "Invalid option: ${OPTARG}" >&2
           print_usage
           exit 1
           ;;
