@@ -67,32 +67,58 @@ convert-footage will not convert files twice and it will not convert your conver
 ```bash
 ############################################################################
 #
+# Version 0.1.2
+#
 # Usage: convert-footage [options] file-or-folder
 #
 # Convert file to Davinci Resolve 14 compatible format.
 #
 # Options:
-#  -h   ... help message
-#  -q n ... quality of the encoded video. Defaults to 0 for best quality.
+#  -h               ... help message
+#  -q n             ... quality of the encoded video. Defaults to 0 for
+#                       best quality.
+#  -s [suffix|mime] ... search type (default is mime):
+#                       - suffix to find files with known extensions
+#                         (mp4, mov, avi)
+#                       - mime to find files by querying the mime type
+#                         this is more flexible, but requires more time
+#  -e               ... show all example usages
 #
 # Examples:
-#
-# Convert the current folder with best quality (default)
-#  convert-footage .
-#
-# Convert the current folder with quality 1
-#  convert-footage -q 1 .
 #
 # Convert folder ../myvideos with best quality (default)
 #  convert-footage ../myvideos
 #
-# Convert file ./myvideo.mp4 with quality 1
-#  convert-footage -q 1 ./myvideo.mp4
-#
-# Show help
-#  convert-footage -h
+# Please use convert-footage -e for more examples.
 #
 ############################################################################
+
+# Examples:
+
+# Convert current folder with best quality (default)
+
+  convert-footage .
+
+# Convert the current folder with quality 1
+
+  convert-footage -q 1 .
+
+# Convert folder ../myvideos with best quality (default)
+
+  convert-footage ../myvideos
+
+# Convert folder ../myvideos but do not search for mime types
+# but for known file extensions (e.g. mp4, mov, avi)
+
+  convert-footage -s suffix ../myvideos
+
+# Convert file ./myvideo.mp4 with quality 1
+
+  convert-footage -q 1 ./myvideo.mp4
+
+# Show help
+
+  convert-footage -h
 ```
 
 ## Todo / Contribution

@@ -8,25 +8,22 @@
 # Convert file to Davinci Resolve 14 compatible format.
 #
 # Options:
-#  -h   ... help message
-#  -q n ... quality of the encoded video. Defaults to 0 for best quality.
+#  -h               ... help message
+#  -q n             ... quality of the encoded video. Defaults to 0 for
+#                       best quality.
+#  -s [suffix|mime] ... search type (default is mime):
+#                       - suffix to find files with known extensions
+#                         (mp4, mov, avi)
+#                       - mime to find files by querying the mime type
+#                         this is more flexible, but requires more time
+#  -e               ... show all example usages
 #
 # Examples:
-#
-# Convert the current folder with best quality (default)
-#  convert-footage .
-#
-# Convert the current folder with quality 1
-#  convert-footage -q 1 .
 #
 # Convert folder ../myvideos with best quality (default)
 #  convert-footage ../myvideos
 #
-# Convert file ./myvideo.mp4 with quality 1
-#  convert-footage -q 1 ./myvideo.mp4
-#
-# Show help
-#  convert-footage -h
+# Please use convert-footage -e for more examples.
 #
 ############################################################################
 
@@ -38,108 +35,169 @@ set -o pipefail
 set -o nounset
 
 main() {
-	local help=false
-	#defaults
-	local quality=0
-	#getopts initialization for usage in function
-	local OPTIND opt
+  #defaults
+  local quality=0
+  local search_type="mime"
+  #getopts initialization for usage in function
+  local OPTIND opt
 
 
-	while getopts "hq:" opt; do
-		case "${opt}" in
-			h)
-					help=true
-					;;
-			q)
-					quality="${OPTARG}"
-					if ! is_positive_integer "${quality}"; then
-						print_error "Quality needs to be a positive integer. The lower the value, the better the quality."
-						print_usage
-						exit 1
-					fi
-				 	;;
-			\?)
-					print_error "Invalid option: -${OPTARG}" >&2
-					print_usage
-					exit 1
-					;;
-		esac
-	done
+  while getopts "heq:s:" opt; do
+    case "${opt}" in
+      h)
+          print_usage
+          exit
+          ;;
+      e)  print_examples
+          exit
+          ;;
+      q)
+          quality="${OPTARG}"
+          if ! is_positive_integer "${quality}"; then
+            print_error "Quality needs to be a positive integer. The lower the value, the better the quality."
+            print_usage
+            exit 1
+          fi
+          ;;
+      s)
+          case "${OPTARG}" in
+            suffix|mime)
+              search_type="${OPTARG}"
+              ;;
+            *)
+              print_error "Invalid search type ${OPTARG}. Allowed types: suffix or mime"
+              print_usage
+              exit 1
+              ;;
+          esac
+          ;;
+      \?)
+          print_error "Invalid option: -${OPTARG}" >&2
+          print_usage
+          exit 1
+          ;;
+    esac
+  done
 
-	shift "$((OPTIND-1))"
+  shift "$((OPTIND-1))"
 
-	if [ $help = true ] ; then
-		print_usage
-		exit
-	fi
+  if [ ${#} -lt 1 ] ; then
+    print_error "You need to specify a file or folder."
+    print_usage
+    exit 1
+  fi
 
-	if [ ${#} -lt 1 ] ; then
-		print_error "You need to specify a file or folder."
-		print_usage
-		exit 1
-	fi
-
-	local fileOrFolder="${1}"
-	if [[ -d "${fileOrFolder}" ]]; then
-		convert_folder "${1}" "${quality}"
-	elif [[ -f "${fileOrFolder}" ]]; then
-		convert_file "${1}" "${quality}"
-	else
-		print_error "File or folder ${fileOrFolder} not found."
-		exit 1
-	fi
-	exit
-}
-
-print_hint()
-{
-	echo -e "\033[93m${1}\033[0m"
-}
-
-print_error()
-{
-	(>&2 echo -e "\033[91m${1}\033[0m")
-}
-
-is_positive_integer() {
-	[[ ${1} =~ ^[0-9]+$ ]]
+  local fileOrFolder="${1}"
+  if [[ -d "${fileOrFolder}" ]]; then
+    convert_folder "${1}" "${quality}" "${search_type}"
+  elif [[ -f "${fileOrFolder}" ]]; then
+    convert_file "${1}" "${quality}"
+  else
+    print_error "File or folder ${fileOrFolder} not found."
+    exit 1
+  fi
+  exit
 }
 
 print_usage() {
-	echo "
+  echo "
 $(cat "$0" | gawk '/^####/,/^$/')
 "
 }
 
-convert_file() {
-	local file="${1}"
-	local quality="${2}"
-	local target="${file}_conv.mov"
-	local command="ffmpeg -i "${file}" -strict -2 -c:v libxvid -q:v "${quality}" -c:a pcm_s16le "${target}""
-	local patternForResultingFile=".*_conv\.mov$"
-	if [[ "${file}" =~ $patternForResultingFile ]]; then
-		print_hint "Result of prior conversion: ${file} – will not convert."
-		return
-	fi
-	if [[ -f "${target}" ]]; then
-		print_hint "Converted file exists: ${target} for ${file} – will not convert."
-		return
-	fi
-	print_hint "Converting ${file} with quality ${quality} to ${target}"
-	$(${command})
+print_examples() {
+  echo "
+
+# Convert current folder with best quality (default)
+
+  convert-footage .
+
+# Convert the current folder with quality 1
+
+  convert-footage -q 1 .
+
+# Convert folder ../myvideos with best quality (default)
+
+  convert-footage ../myvideos
+
+# Convert folder ../myvideos but do not search for mime types
+# but for known file extensions (e.g. mp4, mov, avi)
+
+  convert-footage -s suffix ../myvideos
+
+# Convert file ./myvideo.mp4 with quality 1
+
+  convert-footage -q 1 ./myvideo.mp4
+
+# Show help
+
+  convert-footage -h
+
+"
+}
+
+print_hint()
+{
+  echo -e "\033[93m${1}\033[0m"
+}
+
+print_error()
+{
+  (>&2 echo -e "\033[91m${1}\033[0m")
+}
+
+is_positive_integer() {
+  [[ ${1} =~ ^[0-9]+$ ]]
 }
 
 convert_folder() {
-	local folder="${1}"
-	local quality="${2}"
-	# inherit functions and variables in subshell
-	export -f convert_file
-	export -f print_hint
-	export quality
-	# TODO make suffixes more flexible
-	# TODO skip already converted files if source is not newer
-	# TODO make output filename and location configurable
-	find "${folder}" \( -iname '*.mov' -o -iname '*.avi' -o -iname '*.mp4' \) -exec bash -c 'convert_file "${1}" "${quality}"' _ {} \;
+  local folder="${1}"
+  local quality="${2}"
+  local search_type="${3}"
+  # inherit functions and variables in subshell
+  export -f convert_file
+  export -f print_hint
+  export quality
+  # TODO skip already converted files only if source is not newer
+  # TODO make output filename and location configurable
+  local files=()
+  if [[ "${search_type}" = "mime" ]]; then
+    readarray files < <(find_by_mimetype "${folder}")
+  else
+    readarray files < <(find_by_extension "${folder}")
+  fi
+  for f in ${files[@]}; do
+    convert_file "${f}" "${quality}"
+  done
+}
+
+find_by_mimetype() {
+  folder=$1
+  find "${folder}" -type f -exec file -N -i -- {} + | sed -n 's!: video/[^:]*$!!p'
+}
+
+find_by_extension() {
+  folder=$1
+  # TODO make suffixes more flexible
+  find "${folder}" \( -iname '*.mov' -o -iname '*.avi' -o -iname '*.mp4' \)
+}
+
+convert_file() {
+  local file="${1}"
+  local quality="${2}"
+  local target="${file}_conv.mov"
+  local command="ffmpeg -i "${file}" -strict -2 -c:v libxvid -q:v "${quality}" -c:a pcm_s16le "${target}""
+  local patternForResultingFile=".*_conv\.mov$"
+  if [[ "${file}" =~ $patternForResultingFile ]]; then
+    print_hint "Result of prior conversion: ${file} – will not convert."
+    return
+  fi
+  if [[ -f "${target}" ]]; then
+    print_hint "Converted file exists: ${target} for ${file} – will not convert."
+    return
+  fi
+  print_hint "Converting ${file} with quality ${quality} to ${target}"
+  $(${command})
 }
 
 main "$@"
