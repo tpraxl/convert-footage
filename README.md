@@ -3,6 +3,8 @@
 [davinci]: https://www.blackmagicdesign.com/products/davinciresolve
 [mit]: http://opensource.org/licenses/MIT
 [script]: https://raw.githubusercontent.com/tpraxl/convert-footage/master/convert-footage
+[bats]: https://github.com/bats-core/bats-core
+[bats-issue]: https://github.com/bats-core/bats-core/pull/55
 
 Provide script to convert video footage for [Davinci Resolve 14 Free][davinci] (Linux).
 
@@ -128,6 +130,16 @@ There's a lot to do in order to make the scripts more convenient. Contributions 
 * Perform a sanity check on start (check if all requirements are installed)
 * Provide more flexibility for folder-conversion (more file name patterns, configurable patterns and output file name / location)
 * Provide a context menu entry for nautilus, nemo and other file managers
+
+### Running tests
+
+As a contributor, you might want to run tests.
+
+This project uses [BATS-core][bats] for testing. So after you made sure, BATS-core is available on your system, run
+
+```
+bats test
+```
 
 ## License
 
