@@ -69,3 +69,55 @@ assert_examples_in() {
 	[ "$status" -eq 1 ]
 	assert_usage_in "${output}"
 }
+
+@test "it shows an error when running suffix recognition on a file that is not video but has a known suffix" {
+	local test_dir="$(prepare_test_dir 'convert-footage-1')"
+	# Given we have a file with mp4 suffix, that is not really a video
+	cp "test/fixtures/not-a-video.mp4" "${test_dir}/"
+
+	# When we try to convert the folder using suffix recognition
+	run ./convert-footage -s suffix "${test_dir}/"
+	# We expect an error from ffmpeg
+	[ "$status" -eq 1 ]
+	# And we expect only the source video to be in the directory
+	assert_file_count_in "${test_dir}" 1
+
+	# Afterwards, we clean up the test directory
+	remove_test_dir "${test_dir}"
+}
+
+prepare_test_dir() {
+	local directory="$1"
+	local target_dir="${BATS_TMPDIR}/${directory}"
+	mkdir -p "${target_dir}"
+	echo "${target_dir}"
+}
+
+assert_file_count_in() {
+	local directory="$1"
+	local expected=$2
+	[ $(ls -1q "${directory}" | wc -l) -eq $expected ]
+}
+
+remove_test_dir() {
+	local directory="$1"
+	# make sure, we're in the TMPDIR, we don't want to end up with valuable files deleted because of a syntax error
+	[[ "${directory}" == $BATS_TMPDIR* ]]
+	rm -rf "${directory}"
+}
+
+@test "it doesn't convert files that are no videos and it returns with code 0 when using mime recognition" {
+	local test_dir="$(prepare_test_dir "convert-footage-2")"
+	# Given we have a file with mp4 suffix, that is not really a video
+	cp "test/fixtures/not-a-video.mp4" "${test_dir}/"
+	# When we try to convert the folder using mime type recognition
+	run ./convert-footage -s mime "${test_dir}/"
+	# We expect the program to terminate normally
+	[ "$status" -eq 0 ]
+	[[ "${output}" == *"Couldn't find any files to convert."* ]]
+	# And we only expect the source file to be in the folder
+	assert_file_count_in "${test_dir}" 1
+
+	# Afterwards, we clean up the test directory
+	remove_test_dir "${test_dir}"
+}

@@ -166,6 +166,10 @@ convert_folder() {
   else
     readarray files < <(find_by_extension "${folder}")
   fi
+  if [ ${#files[@]} -eq 0 ]; then
+    print_hint "Couldn't find any files to convert."
+    exit 0
+  fi
   for f in ${files[@]}; do
     convert_file "${f}" "${quality}"
   done
