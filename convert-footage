@@ -11,11 +11,6 @@
 #  -h               ... help message
 #  -q n             ... quality of the encoded video. Defaults to 0 for
 #                       best quality.
-#  -s [suffix|mime] ... search type (default is mime):
-#                       - suffix to find files with known extensions
-#                         (mp4, mov, avi)
-#                       - mime to find files by querying the mime type
-#                         this is more flexible, but requires more time
 #  -e               ... show all example usages
 #
 # Examples:
@@ -37,12 +32,11 @@ set -o nounset
 main() {
   #defaults
   local quality=0
-  local search_type="mime"
   #getopts initialization for usage in function
   local OPTIND opt
 
 
-  while getopts ":heq:s:" opt; do
+  while getopts ":heq:" opt; do
     case "${opt}" in
       h)
           print_usage
@@ -58,18 +52,6 @@ main() {
             print_usage
             exit 1
           fi
-          ;;
-      s)
-          case "${OPTARG}" in
-            suffix|mime)
-              search_type="${OPTARG}"
-              ;;
-            *)
-              print_error "Invalid search type ${OPTARG}. Allowed types: suffix or mime"
-              print_usage
-              exit 1
-              ;;
-          esac
           ;;
       \?)
           print_error "Invalid option: ${OPTARG}" >&2
@@ -89,7 +71,7 @@ main() {
 
   local fileOrFolder="${1}"
   if [[ -d "${fileOrFolder}" ]]; then
-    convert_folder "${1}" "${quality}" "${search_type}"
+    convert_folder "${1}" "${quality}"
   elif [[ -f "${fileOrFolder}" ]]; then
     convert_file "${1}" "${quality}"
   else
@@ -120,11 +102,6 @@ print_examples() {
 
   convert-footage ../myvideos
 
-# Convert folder ../myvideos but do not search for mime types
-# but for known file extensions (e.g. mp4, mov, avi)
-
-  convert-footage -s suffix ../myvideos
-
 # Convert file ./myvideo.mp4 with quality 1
 
   convert-footage -q 1 ./myvideo.mp4
@@ -153,55 +130,47 @@ is_positive_integer() {
 convert_folder() {
   local folder="${1}"
   local quality="${2}"
-  local search_type="${3}"
-  # inherit functions and variables in subshell
-  export -f convert_file
-  export -f print_hint
-  export quality
-  # TODO skip already converted files only if source is not newer
   # TODO make output filename and location configurable
   local files=()
-  if [[ "${search_type}" = "mime" ]]; then
-    readarray files < <(find_by_mimetype "${folder}")
-  else
-    readarray files < <(find_by_extension "${folder}")
-  fi
+
+  # read into array files the following:
+  # * find all files in folder
+  # * extract the path + mime type
+  # * filter video and strip mime type
+  readarray files < <(find "${folder}" -type f \
+    -exec file -N -i {} + |\
+    sed -n 's!: video/[^:]*$!!p')
+  # no files found? Exit with hint.
   if [ ${#files[@]} -eq 0 ]; then
     print_hint "Couldn't find any files to convert."
     exit 0
   fi
-  for f in ${files[@]}; do
-    convert_file "${f}" "${quality}"
+  for f in "${files[@]}"; do
+    # pass file with stripped trailing newline to convert_file
+    convert_file "${f%$'\n'}" "${quality}"
   done
-}
-
-find_by_mimetype() {
-  folder=$1
-  find "${folder}" -type f -exec file -N -i -- {} + | sed -n 's!: video/[^:]*$!!p'
-}
-
-find_by_extension() {
-  folder=$1
-  # TODO make suffixes more flexible
-  find "${folder}" \( -iname '*.mov' -o -iname '*.avi' -o -iname '*.mp4' \)
 }
 
 convert_file() {
   local file="${1}"
   local quality="${2}"
   local target="${file}_conv.mov"
-  local command="ffmpeg -i "${file}" -strict -2 -c:v libxvid -q:v "${quality}" -c:a pcm_s16le "${target}""
   local patternForResultingFile=".*_conv\.mov$"
+  # prevent converting of already converted files
   if [[ "${file}" =~ $patternForResultingFile ]]; then
     print_hint "Result of prior conversion: ${file} – will not convert."
     return
   fi
+  # prevent overwriting of already converted files (prevent converting a file again)
+  # TODO skip already converted files only if source is not newer
   if [[ -f "${target}" ]]; then
     print_hint "Converted file exists: ${target} for ${file} – will not convert."
     return
   fi
+  # output action
   print_hint "Converting ${file} with quality ${quality} to ${target}"
-  $(${command})
+  # actually perform action
+  ffmpeg -i "${file}" -strict -2 -c:v libxvid -q:v "${quality}" -c:a pcm_s16le "${target}"
 }
 
 main "$@"

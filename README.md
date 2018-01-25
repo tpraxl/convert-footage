@@ -79,11 +79,6 @@ convert-footage will not convert files twice and it will not convert your conver
 #  -h               ... help message
 #  -q n             ... quality of the encoded video. Defaults to 0 for
 #                       best quality.
-#  -s [suffix|mime] ... search type (default is mime):
-#                       - suffix to find files with known extensions
-#                         (mp4, mov, avi)
-#                       - mime to find files by querying the mime type
-#                         this is more flexible, but requires more time
 #  -e               ... show all example usages
 #
 # Examples:
@@ -109,11 +104,6 @@ convert-footage will not convert files twice and it will not convert your conver
 
   convert-footage ../myvideos
 
-# Convert folder ../myvideos but do not search for mime types
-# but for known file extensions (e.g. mp4, mov, avi)
-
-  convert-footage -s suffix ../myvideos
-
 # Convert file ./myvideo.mp4 with quality 1
 
   convert-footage -q 1 ./myvideo.mp4
@@ -128,7 +118,7 @@ convert-footage will not convert files twice and it will not convert your conver
 There's a lot to do in order to make the scripts more convenient. Contributions are welcome. The most important TODOs are listed below:
 
 * Perform a sanity check on start (check if all requirements are installed)
-* Provide more flexibility for folder-conversion (more file name patterns, configurable patterns and output file name / location)
+* Provide more flexibility for folder-conversion (configurable file patterns and output file name / location)
 * Provide a context menu entry for nautilus, nemo and other file managers
 
 ### Running tests

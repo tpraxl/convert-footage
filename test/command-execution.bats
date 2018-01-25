@@ -36,7 +36,6 @@ assert_examples_in() {
 	[[ "${output}" == *"# Convert current folder with best quality"* ]]
 	[[ "${output}" == *"# Convert the current folder with quality 1"* ]]
 	[[ "${output}" == *"# Convert folder ../myvideos with best quality (default)"* ]]
-	[[ "${output}" == *"# Convert folder ../myvideos but do not search for mime types"* ]]
 	[[ "${output}" == *"# Convert file ./myvideo.mp4 with quality 1"* ]]
 	[[ "${output}" == *"# Show help"* ]]
 }
@@ -56,30 +55,18 @@ assert_examples_in() {
 	assert_usage_in "${output}"
 }
 
-@test "calling convert-footage with illegal -s value reports useful error message" {
-	run ./convert-footage -s a
-	[ "$status" -eq 1 ]
-	[[ "${output}" == *"Invalid search type a. Allowed types: suffix or mime"* ]]
 
-	run ./convert-footage -s 1
-	[ "$status" -eq 1 ]
-	[[ "${output}" == *"Invalid search type 1. Allowed types: suffix or mime"* ]]
-
-	run ./convert-footage -s
-	[ "$status" -eq 1 ]
-	assert_usage_in "${output}"
-}
-
-@test "it shows an error when running suffix recognition on a file that is not video but has a known suffix" {
-	local test_dir="$(prepare_test_dir 'convert-footage-1')"
+@test "it doesn't convert files that are no videos and it returns with code 0 when searching a folder" {
+	local test_dir="$(prepare_test_dir "convert-footage-2")"
 	# Given we have a file with mp4 suffix, that is not really a video
 	cp "test/fixtures/not-a-video.mp4" "${test_dir}/"
-
-	# When we try to convert the folder using suffix recognition
-	run ./convert-footage -s suffix "${test_dir}/"
-	# We expect an error from ffmpeg
-	[ "$status" -eq 1 ]
-	# And we expect only the source video to be in the directory
+	# When we try to convert the folder
+	run ./convert-footage "${test_dir}/"
+	# We expect the program to terminate normally
+	echo "${output}"
+	[ "$status" -eq 0 ]
+	[[ "${output}" == *"Couldn't find any files to convert."* ]]
+	# And we only expect the source file to be in the folder
 	assert_file_count_in "${test_dir}" 1
 
 	# Afterwards, we clean up the test directory
@@ -106,18 +93,23 @@ remove_test_dir() {
 	rm -rf "${directory}"
 }
 
-@test "it doesn't convert files that are no videos and it returns with code 0 when using mime recognition" {
-	local test_dir="$(prepare_test_dir "convert-footage-2")"
-	# Given we have a file with mp4 suffix, that is not really a video
-	cp "test/fixtures/not-a-video.mp4" "${test_dir}/"
-	# When we try to convert the folder using mime type recognition
-	run ./convert-footage -s mime "${test_dir}/"
+
+@test "it can handle file- and foldernames with spaces" {
+	local test_dir="$(prepare_test_dir "convert-footage-3")"
+	# Given we have a file and folder with spaces in the name
+	cp -R "test/fixtures/folder with spaces" "${test_dir}"
+	assert_file_count_in "${test_dir}" 1
+
+	# When we convert the folder
+	run ./convert-footage "${test_dir}/folder with spaces/"
+	echo "${output}"
 	# We expect the program to terminate normally
 	[ "$status" -eq 0 ]
-	[[ "${output}" == *"Couldn't find any files to convert."* ]]
-	# And we only expect the source file to be in the folder
-	assert_file_count_in "${test_dir}" 1
+	# And we expect source file and the converted file to be in the folder
+	assert_file_count_in "${test_dir}/folder with spaces" 2
 
 	# Afterwards, we clean up the test directory
 	remove_test_dir "${test_dir}"
 }
+
+
