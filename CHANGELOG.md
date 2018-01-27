@@ -2,6 +2,24 @@
 
 All noteable changes to this project will be documented in this file. This project adheres to http://semver.org/[Semantic Versioning]
 
+## [unreleased]
+
+### Added
+
+* bats tests
+* Contributor's notice for running bats tests
+
+### Changed
+
+* Video recognition is now based on mime type, not anymore based on file suffixes
+
+### Fixed
+
+* Calling convert-footage without parameter will print the help
+* Calling convert-footage with illegal parameters will print the help
+* Using convert-footage with a folder that doesn't contain videos will print an appropriate hint and exit (crashed before)
+* File names and folder names with spaces are now handled (crashed before)
+
 ## [0.1.2] – 2018-01-08
 
 ### Fixed
