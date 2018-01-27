@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ############################################################################
 #
-# Version 0.1.2
+# Version 1.0.0
 #
 # Usage: convert-footage [options] file-or-folder
 #

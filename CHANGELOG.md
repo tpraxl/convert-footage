@@ -2,12 +2,13 @@
 
 All noteable changes to this project will be documented in this file. This project adheres to http://semver.org/[Semantic Versioning]
 
-## [unreleased]
+## [1.0.0] – 2018-01-27
 
 ### Added
 
 * bats tests
 * Contributor's notice for running bats tests
+* Test footage
 
 ### Changed
 
