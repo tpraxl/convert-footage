@@ -69,7 +69,7 @@ convert-footage will not convert files twice and it will not convert your conver
 ```bash
 ############################################################################
 #
-# Version 0.1.2
+# Version 1.1.0
 #
 # Usage: convert-footage [options] file-or-folder
 #
