@@ -34,19 +34,27 @@ assert_usage_in() {
 assert_examples_in() {
 	local output="$1"
 	[[ "${output}" == *"# Convert current folder with best quality"* ]]
-	[[ "${output}" == *"# Convert the current folder with quality 1"* ]]
+	[[ "${output}" == *"# Convert the current folder with quality 2"* ]]
 	[[ "${output}" == *"# Convert folder ../myvideos with best quality (default)"* ]]
-	[[ "${output}" == *"# Convert file ./myvideo.mp4 with quality 1"* ]]
+	[[ "${output}" == *"# Convert file ./myvideo.mp4 with quality 2"* ]]
 	[[ "${output}" == *"# Show help"* ]]
 }
 
 @test "calling convert-footage with illegal -q value reports useful error message" {
-	local expected="Quality needs to be a positive integer. The lower the value, the better the quality."
+	local expected="Quality needs to be a positive integer between 1 and 31. The lower the value, the better the quality."
 	run ./convert-footage -q a
 	[ "$status" -eq 1 ]
 	[[ "${output}" == *"${expected}"* ]]
 
 	run ./convert-footage -q -1
+	[ "$status" -eq 1 ]
+	[[ "${output}" == *"${expected}"* ]]
+
+	run ./convert-footage -q 0
+	[ "$status" -eq 1 ]
+	[[ "${output}" == *"${expected}"* ]]
+
+	run ./convert-footage -q 32
 	[ "$status" -eq 1 ]
 	[[ "${output}" == *"${expected}"* ]]
 
@@ -111,5 +119,3 @@ remove_test_dir() {
 	# Afterwards, we clean up the test directory
 	remove_test_dir "${test_dir}"
 }
-
-
