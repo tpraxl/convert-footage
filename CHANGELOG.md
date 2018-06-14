@@ -2,6 +2,12 @@
 
 All noteable changes to this project will be documented in this file. This project adheres to http://semver.org/[Semantic Versioning]
 
+## [1.1.0] – 2018-06-14
+
+### Fixed
+
+* Corrected the wrong quality default 0. It should be an integer from 1–31, according to https://trac.ffmpeg.org/wiki/Encode/MPEG-4. Thanks for reporting @LaKing.
+
 ## [1.0.0] – 2018-01-27
 
 ### Added

@@ -69,7 +69,7 @@ convert-footage will not convert files twice and it will not convert your conver
 ```bash
 ############################################################################
 #
-# Version 0.1.2
+# Version 1.1.0
 #
 # Usage: convert-footage [options] file-or-folder
 #
@@ -77,7 +77,7 @@ convert-footage will not convert files twice and it will not convert your conver
 #
 # Options:
 #  -h               ... help message
-#  -q n             ... quality of the encoded video. Defaults to 0 for
+#  -q n             ... quality of the encoded video. Defaults to 1 for
 #                       best quality.
 #  -e               ... show all example usages
 #
@@ -96,17 +96,17 @@ convert-footage will not convert files twice and it will not convert your conver
 
   convert-footage .
 
-# Convert the current folder with quality 1
+# Convert the current folder with quality 2
 
-  convert-footage -q 1 .
+  convert-footage -q 2 .
 
 # Convert folder ../myvideos with best quality (default)
 
   convert-footage ../myvideos
 
-# Convert file ./myvideo.mp4 with quality 1
+# Convert file ./myvideo.mp4 with quality 2
 
-  convert-footage -q 1 ./myvideo.mp4
+  convert-footage -q 2 ./myvideo.mp4
 
 # Show help
 

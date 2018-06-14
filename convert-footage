@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ############################################################################
 #
-# Version 1.0.0
+# Version 1.1.0
 #
 # Usage: convert-footage [options] file-or-folder
 #
@@ -9,7 +9,7 @@
 #
 # Options:
 #  -h               ... help message
-#  -q n             ... quality of the encoded video. Defaults to 0 for
+#  -q n             ... quality of the encoded video. Defaults to 1 for
 #                       best quality.
 #  -e               ... show all example usages
 #
@@ -31,7 +31,7 @@ set -o nounset
 
 main() {
   #defaults
-  local quality=0
+  local quality=1
   #getopts initialization for usage in function
   local OPTIND opt
 
@@ -47,8 +47,8 @@ main() {
           ;;
       q)
           quality="${OPTARG}"
-          if ! is_positive_integer "${quality}"; then
-            print_error "Quality needs to be a positive integer. The lower the value, the better the quality."
+          if ! is_between_1_and_31 "${quality}"; then
+            print_error "Quality needs to be a positive integer between 1 and 31. The lower the value, the better the quality."
             print_usage
             exit 1
           fi
@@ -94,17 +94,17 @@ print_examples() {
 
   convert-footage .
 
-# Convert the current folder with quality 1
+# Convert the current folder with quality 2
 
-  convert-footage -q 1 .
+  convert-footage -q 2 .
 
 # Convert folder ../myvideos with best quality (default)
 
   convert-footage ../myvideos
 
-# Convert file ./myvideo.mp4 with quality 1
+# Convert file ./myvideo.mp4 with quality 2
 
-  convert-footage -q 1 ./myvideo.mp4
+  convert-footage -q 2 ./myvideo.mp4
 
 # Show help
 
@@ -123,8 +123,8 @@ print_error()
   (>&2 echo -e "\033[91m${1}\033[0m")
 }
 
-is_positive_integer() {
-  [[ ${1} =~ ^[0-9]+$ ]]
+is_between_1_and_31() {
+  [[ "${1}" =~ ^[0-9]+$ ]] && [ "${1}" -ge 1 -a "${1}" -le 31 ]
 }
 
 convert_folder() {
