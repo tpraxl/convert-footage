@@ -1,6 +1,10 @@
 # Change Log
 
-All noteable changes to this project will be documented in this file. This project adheres to http://semver.org/[Semantic Versioning]
+All noteable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/)
+
+## [1.2.0] – 2018-10-04
+
+* add installer (by [@dangreco](https://github.com/dangreco))
 
 ## [1.1.0] – 2018-06-14
 
