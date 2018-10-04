@@ -25,36 +25,17 @@ Currently, this project is at an early stage. More options are likely to come up
 
 ## Installation
 
-If you don't have a `$HOME/bin` folder, <a href="#setup-home-bin-folder">follow this guide first</a>.
-Alternatively, you can put the script anywhere. It's just more convenient to follow the recommendations.
+#### via curl
 
-```bash
-cd $HOME/bin
-wget https://raw.githubusercontent.com/tpraxl/convert-footage/master/convert-footage
-chmod u+x convert-footage
+```shell
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/tpraxl/convert-footage/master/install.sh)"
+```
+#### via wget
+
+```shell
+sh -c "$(wget https://raw.githubusercontent.com/tpraxl/convert-footage/master/install.sh -O -)"
 ```
 
-<a id="setup-home-bin-folder"></a>
-## Setup $HOME/bin folder
-
-In the Terminal:
-
-```bash
-# Make sure to add this to your $PATH afterwards (see below)
-mkdir $HOME/bin
-```
-
-### Add $HOME/bin to $PATH
-
-This depends on the shell you are using.
-
-`bash` users edit `~/.bashrc`. Find a line that exports your `PATH`. Maybe there is no such line. Just create it as follows then. Make sure that your `$PATH` contains the installation path:
-
-```
-export PATH=$PATH:/home/your-user-name/bin
-```
-
-You may need to open a new Terminal afterwards. Just check if `echo $PATH` contains your new folder.
 
 ## Usage
 
