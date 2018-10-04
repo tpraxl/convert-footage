@@ -13,20 +13,35 @@ main() {
     NORMAL=""
   fi
 
-  set -e
+  # Exit when a command fails
+  set -o errexit
 
-  echo "${GREEN}Installing DaVinci Video Converter..."
-  echo "${NORMAL}Cloning repository..."
-  git clone --depth=1 https://github.com/tpraxl/convert-footage || {
-    echo "${RED}Error: git clone of convert-footage repo failed\n"
-    exit 1
-  }
-  echo "${NORMAL}Moving files..."
-  sudo cp ./convert-footage/convert-footage /usr/local/bin
+  URL="https://raw.githubusercontent.com/tpraxl/convert-footage/master/convert-footage"
+
+  echo "${GREEN}Installing convert-footage..."
+  echo "${NORMAL}Downloading file..."
+
+  # We download file before asking for permissions so we aren't using sudo with curl/wget.
+  
+  # Check if curl is installed
+  if command -v curl >/dev/null 2>&1; then
+    curl $URL >> ./convert-footage-tmp
+  else 
+    # Check if wget is installed
+    if command -v wget >/dev/null 2>&1; then
+      wget $URL -O ./convert-footage-tmp -q --show-progress
+    else
+      echo "${RED}Error: Please install either wget or curl before running this script."
+      exit 1
+    fi
+  fi
+
+  echo "${NORMAL}Moving file..."
+  sudo cp ./convert-footage-tmp /usr/local/bin/convert-footage
   sudo chmod +x /usr/local/bin/convert-footage
   echo "${NORMAL}Cleaning up..."
-  rm -rf ./convert-footage
-  echo "${GREEN}DaVinci Video Converter has been installed!"
+  rm ./convert-footage-tmp
+  echo "${GREEN}convert-footage has been installed!"
   echo "${GREEN}Use the command \"convert-footage\" to get started."
 
 }
